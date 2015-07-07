@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Xquest</string>
+    <string name="action_settings">Settings</string>
+    <string name="NextWave">Собери все кристаллы</string>
+    <string name="Wave">Волна</string>
+    <string name="Lives">Жизней</string>
+    <string name="Crystals">Кристаллы</string>
+    <string name="Points">Очки</string>
+    <string name="title_activity_main_menu">MainMenu</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="NewGame">Новая игра</string>
+    <string name="Exit">Выход</string>
+    <string name="Pause">Пауза</string>
+    <string name="Menu">Меню</string>
+    <string name="Resume">Продолжить</string>
+
+</resources>
