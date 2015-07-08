@@ -3,7 +3,6 @@ package valeriy.kostarev.xquest;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 
 /**
@@ -59,7 +58,7 @@ public class ButtonFire{
                 if (isInside(event.getX(pointerIndex), event.getY(pointerIndex))) {
                     setRunning(true);
                     id = event.getPointerId(pointerIndex);
-                    game.hero.shut();
+                    game.hero.shot();
                 }
                 break;
 
@@ -88,10 +87,7 @@ public class ButtonFire{
     }
 
     public boolean isInside(Float x, Float y) {
-        if ((x - this.x) * (x - this.x) + (y - this.y) * (y - this.y) <= radius * radius) {
-            return true;
-        }
-        return false;
+        return (x - this.x) * (x - this.x) + (y - this.y) * (y - this.y) <= radius * radius;
     }
 
     public boolean isRunning() {

@@ -60,8 +60,9 @@ public class Enemy{
         game.incPoints(cost);
         //Уничтожаем врага
         game.monsters[id] = null;
-        //Создаём взрыв
+
         if(withExplosion) {
+            //Создаём взрыв
             game.newExplode(gameX + rect.width() / 2, gameY + rect.height() / 2, 1);
         }
     }

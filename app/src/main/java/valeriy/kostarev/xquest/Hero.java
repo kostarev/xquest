@@ -3,7 +3,6 @@ package valeriy.kostarev.xquest;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
@@ -19,12 +18,12 @@ public class Hero {
     public static final int BULLET_2 = 1;
     public static final int BULLET_3 = 2;
     public static final int BULLET_BACK = 3;
+    public Rect heroRect, hitRect;
     private int shipWidth, shipHeight, safeZone;
     private float x,y,dx,gameX, gameY, dxInc, dyInc, dy, rotateAngle, fullSpeed;
     private Bitmap image;
     private Paint paint, flarePaint;
     private Game game;
-    public Rect heroRect, hitRect;
     private boolean hidden;
     private int bulletType;
     private long lastShotTime;
@@ -191,13 +190,9 @@ public class Hero {
 
     //Смерть героя
     public void killMe() {
+
         //Создаём взрыв
-        for (int i = 0; i < game.explosionsMax; i++) {
-            if (game.explosions[i] == null) {
-                game.explosions[i] = new Explosion(game, i, gameX + heroRect.width() / 2, gameY + heroRect.height() / 2, 1);
-                break;
-            }
-        }
+        game.newExplode(gameX + heroRect.width() / 2, gameY + heroRect.height() / 2, 1);
 
         game.decLives();
         dxInc = 0;
@@ -231,7 +226,7 @@ public class Hero {
 
 
     //Выстрел
-    public void shut() {
+    public void shot() {
         //Ограничиваем количество выстрелов во времени
         if(lastShotTime+shotSleepTime>System.currentTimeMillis()){
             return;
@@ -267,6 +262,9 @@ public class Hero {
                 newBullet(x, y, (float) (fullSpeed * Math.cos(angle-tmpAngle)), (float) (fullSpeed * Math.sin(angle-tmpAngle)));
                 break;
         }
+
+        //Проигрываем звук выстрела
+        game.sp.play(game.soundIdShot1, 1, 1, 0, 0, 1);
     }
 
     //Создание пули на экране
@@ -284,6 +282,9 @@ public class Hero {
         this.hidden = hidden;
     }
 
+    public int getBulletType() {
+        return bulletType;
+    }
 
     public void setBulletType(int bulletType) {
         this.bulletType = bulletType;
@@ -303,9 +304,5 @@ public class Hero {
                 shotSleepTime = 30;
                 break;
         }
-    }
-
-    public int getBulletType() {
-        return bulletType;
     }
 }

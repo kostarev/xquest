@@ -1,6 +1,5 @@
 package valeriy.kostarev.xquest;
 
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -19,7 +18,7 @@ import java.util.Random;
 /**
  * Created by valerik on 23.11.2014.
  */
-public class Game {
+public class Game implements SoundPool.OnLoadCompleteListener {
 
     //Константы направления
     public static final byte CRYSTAL = 1;
@@ -34,35 +33,22 @@ public class Game {
 
     public static final int ACTION_MAIN_MENU = 0;
     public static final int ACTION_GAME = 1;
-
-
+    private static Game instance;
+    public final Joystick joystick;
+    public final MainMenu mainMenu;
     private final ButtonFire fireButton;
     private final GameClickable buttonPause;
     private final GameClickable buttonBack;
-    public final Joystick joystick;
-    public final MainMenu mainMenu;
-
-
-    private static Game instance;
     private final String WaveString;
     private final String PointsString;
     private final String LivesString;
     private final String CristalsString;
-
-    private int gameScreenWidth, gameScreenHeight, screenX0,
-            screenY0, screenX1, screenY1,
-            screenWidth, screenHeight, centerRectWidth, centerRectHeight,
-            centerRectX0, centerRectX1, centerRectY0, centerRectY1,
-            gameScreenX0, gameScreenY0, gameScreenX1, gameScreenY1,
-            realScreenWidth, realScreenHeight,
-            points, lives, wave, bombs, crystalsCnt;
+    private final Bitmap stars;
     public Rect screenRect, centerRect, gameScreenRect, winRect;
     public int kvant, panelWidth, elementWidth, setkaWidth, setkaHeight,
             monsterWidth, explosionsMax;
     public GameView gameView;
     public Hero hero;
-    private Paint paint;
-    private final Bitmap stars;
     public Bitmap monstr1Bitmap, shipflare;
     public int[] boomWidth;
     public Bitmap asteroidBitmap[], planetBitmap[], boomBitmap[];
@@ -77,33 +63,25 @@ public class Game {
     public Border border;
     public MyAnimation crystallAnimation, mineAnimation, pulsarAnimation;
     public Explosion[] explosions;
-    private int action, FPS = 0, fpsCnt = 0;
-
-    private int waitTime;
-    private long waitTimeStart, fpsStartTime;
-
-    private boolean running = false;
     public SpawnTimer spawnTimer;
-    private Thread spawnThread;
     public BulletTimer bulletTimer;
     public Thread bulletThread;
+    public SoundPool sp;
+    public int soundIdShot1, soundIdExplode1;
+    private int gameScreenWidth, gameScreenHeight, screenX0,
+            screenY0, screenX1, screenY1,
+            screenWidth, screenHeight, centerRectWidth, centerRectHeight,
+            centerRectX0, centerRectX1, centerRectY0, centerRectY1,
+            gameScreenX0, gameScreenY0, gameScreenX1, gameScreenY1,
+            realScreenWidth, realScreenHeight,
+            points, lives, wave, bombs, crystalsCnt;
+    private Paint paint;
+    private int action, FPS = 0, fpsCnt = 0;
+    private int waitTime;
+    private long waitTimeStart, fpsStartTime;
+    private boolean running = false;
+    private Thread spawnThread;
 
-
-    public static synchronized Game getInstance(GameView gameView) {
-        if (instance == null) {
-            instance = new Game(gameView);
-        }
-        return instance;
-    }
-
-    public void wait(int time) {
-        waitTime = time;
-        waitTimeStart = System.currentTimeMillis();
-    }
-
-    public boolean isWaiting() {
-        return (System.currentTimeMillis() < waitTimeStart + waitTime);
-    }
 
     private Game(GameView gameView) {
         this.gameView = gameView;
@@ -265,21 +243,32 @@ public class Game {
 
         bulletTimer = new BulletTimer(this);
         bulletThread = new Thread(bulletTimer);
-/*
+
         //Загрузка звуков.
-        SoundPool mSoundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-        int moveId = mSoundPool.load(gameView.activity, R.raw.shot1, 1);
-        mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                Log.d("SoundPool_15", "onLoadComplete, sampleId = " + sampleId + ", status = " + status);
-            }
-        });
-*/
+        sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        sp.setOnLoadCompleteListener(this);
+        soundIdShot1 = sp.load(gameView.activity, R.raw.shot, 1);
+        soundIdExplode1 = sp.load(gameView.activity, R.raw.explode, 1);
+
         //Запуск новой игры
         newGame();
     }
 
+    public static synchronized Game getInstance(GameView gameView) {
+        if (instance == null) {
+            instance = new Game(gameView);
+        }
+        return instance;
+    }
+
+    public void wait(int time) {
+        waitTime = time;
+        waitTimeStart = System.currentTimeMillis();
+    }
+
+    public boolean isWaiting() {
+        return (System.currentTimeMillis() < waitTimeStart + waitTime);
+    }
 
     public void newGame() {
         //Наш корабль
@@ -304,6 +293,8 @@ public class Game {
                 break;
             }
         }
+        //Звук взрыва
+        sp.play(soundIdExplode1, 1, 1, 0, 0, 1);
     }
 
     public void initWave() {
@@ -472,7 +463,7 @@ public class Game {
 
         canvas.drawText("FPS: " + FPS(), realScreenWidth - panelWidth + 2 * kvant, 18 * kvant, paint);
 
-        if(hero.getBulletType()!=hero.BULLET_NORMAL) {
+        if (hero.getBulletType() != Hero.BULLET_NORMAL) {
             String text = hero.getBulletType() + " : " + (int)(bulletTimer.getTime()/1000);
             canvas.drawText(text, realScreenWidth - panelWidth + 2 * kvant, 22 * kvant, paint);
         }
@@ -486,17 +477,6 @@ public class Game {
             fpsCnt = 0;
         }
         return FPS;
-    }
-
-
-    public void setGameScreenX0(int x0) {
-        gameScreenX0 = x0;
-        gameScreenX1 = x0 + gameScreenWidth;
-    }
-
-    public void setGameScreenY0(int y0) {
-        gameScreenY0 = y0;
-        gameScreenY1 = y0 + gameScreenHeight;
     }
 
     public int getScreenWidth() {
@@ -543,8 +523,18 @@ public class Game {
         return gameScreenX0;
     }
 
+    public void setGameScreenX0(int x0) {
+        gameScreenX0 = x0;
+        gameScreenX1 = x0 + gameScreenWidth;
+    }
+
     public int getGameScreenY0() {
         return gameScreenY0;
+    }
+
+    public void setGameScreenY0(int y0) {
+        gameScreenY0 = y0;
+        gameScreenY1 = y0 + gameScreenHeight;
     }
 
     public int getGameScreenX1() {
@@ -710,5 +700,10 @@ public class Game {
 
         }
         return true;
+    }
+
+    @Override
+    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+        Log.i("onLoadComplete, sampleId" + sampleId + ", status = ", status + "");
     }
 }
