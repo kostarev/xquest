@@ -293,8 +293,6 @@ public class Game implements SoundPool.OnLoadCompleteListener {
                 break;
             }
         }
-        //Звук взрыва
-        sp.play(soundIdExplode1, 1, 1, 0, 0, 1);
     }
 
     public void initWave() {
