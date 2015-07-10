@@ -202,7 +202,7 @@ public class Hero {
         //Создаём взрыв
         game.newExplode(gameX + heroRect.width() / 2, gameY + heroRect.height() / 2, 1);
         //Звук взрыва
-        game.sp.play(game.soundIdExplode1, 1, 1, 0, 0, 1);
+        //game.sp.play(game.soundIdExplode1, 1, 1, 0, 0, 1);
 
         game.decLives();
         dxInc = 0;
@@ -274,7 +274,7 @@ public class Hero {
         }
 
         //Проигрываем звук выстрела
-        game.sp.play(game.soundIdShot1, (float) 0.1, (float) 0.1, 0, 0, 1);
+        game.sound.play("shot",  (float)0.1);
     }
 
     //Создание пули на экране

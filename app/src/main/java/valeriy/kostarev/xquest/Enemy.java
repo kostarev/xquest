@@ -54,7 +54,7 @@ public class Enemy{
         //Создаём взрыв
         game.newExplode(gameX+ rect.width()/2,gameY+ rect.height()/2,1);
         //Звук взрыва
-        game.sp.play(game.soundIdExplode1, 1, 1, 0, 0, 1);
+        //game.sp.play(game.soundIdExplode1, 1, 1, 0, 0, 1);
     }
 
     public void killMe(boolean withExplosion) {
@@ -67,7 +67,7 @@ public class Enemy{
             //Создаём взрыв
             game.newExplode(gameX + rect.width() / 2, gameY + rect.height() / 2, 1);
             //Звук взрыва
-            game.sp.play(game.soundIdExplode1, 1, 1, 0, 0, 1);
+            //game.sp.play(game.soundIdExplode1, 1, 1, 0, 0, 1);
         }
     }
 

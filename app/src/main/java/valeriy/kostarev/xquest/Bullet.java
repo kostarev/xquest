@@ -98,33 +98,6 @@ public class Bullet {
         game.bullets[id] = null;
 
         //Звук взрыва
-        int xDistance = (int) (game.hero.getX() - x);
-        int yDistance = (int)(game.hero.getY()-y);
-        int distance = (int) Math.sqrt(xDistance*xDistance+yDistance*yDistance);
-        double maxDistance = Math.sqrt(game.getGameScreenWidth() * game.getGameScreenWidth() + game.getGameScreenHeight() * game.getGameScreenHeight());
-
-        float rightVolume = (float) (-xDistance/maxDistance);
-        float leftVolume = (float)(xDistance/maxDistance);
-
-        if (rightVolume < 0) {
-            rightVolume = 0;
-        } else if (rightVolume > 1) {
-            rightVolume = 1;
-        }
-
-        if (leftVolume < 0) {
-            leftVolume = 0;
-        } else if (leftVolume > 1) {
-            leftVolume = 1;
-        }
-        //Удалённость
-        float volumeKoef = (float)(1 - distance / maxDistance);
-        rightVolume = rightVolume * volumeKoef;
-        leftVolume = leftVolume * volumeKoef;
-
-        game.sp.play(game.soundIdExplode1, leftVolume, rightVolume, 0, 0, 1);
-        Log.i("Sound", "right = " + rightVolume + " left = " + leftVolume + " distance = " + distance + " vk = " + volumeKoef+" mD="+maxDistance);
-
-
+        game.sound.play("explode", 1, (int) x, (int) y);
     }
 }

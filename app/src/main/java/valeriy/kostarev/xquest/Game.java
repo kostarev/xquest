@@ -18,7 +18,7 @@ import java.util.Random;
 /**
  * Created by valerik on 23.11.2014.
  */
-public class Game implements SoundPool.OnLoadCompleteListener {
+public class Game{
 
     //Константы направления
     public static final byte CRYSTAL = 1;
@@ -30,6 +30,10 @@ public class Game implements SoundPool.OnLoadCompleteListener {
     public static final int MENU_MAIN_MENU = 2;
     public static final int MENU_RESUME = 3;
     public static final int MENU_PAUSE = 4;
+
+    public static final int SOUND_SHOT = 0;
+    public static final int SOUND_EXPLODE = 1;
+
 
     public static final int ACTION_MAIN_MENU = 0;
     public static final int ACTION_GAME = 1;
@@ -66,8 +70,6 @@ public class Game implements SoundPool.OnLoadCompleteListener {
     public SpawnTimer spawnTimer;
     public BulletTimer bulletTimer;
     public Thread bulletThread;
-    public SoundPool sp;
-    public int soundIdShot1, soundIdExplode1;
     private int gameScreenWidth, gameScreenHeight, screenX0,
             screenY0, screenX1, screenY1,
             screenWidth, screenHeight, centerRectWidth, centerRectHeight,
@@ -81,6 +83,7 @@ public class Game implements SoundPool.OnLoadCompleteListener {
     private long waitTimeStart, fpsStartTime;
     private boolean running = false;
     private Thread spawnThread;
+    public Sound sound;
 
 
     private Game(GameView gameView) {
@@ -245,10 +248,9 @@ public class Game implements SoundPool.OnLoadCompleteListener {
         bulletThread = new Thread(bulletTimer);
 
         //Загрузка звуков.
-        sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-        sp.setOnLoadCompleteListener(this);
-        soundIdShot1 = sp.load(gameView.activity, R.raw.shot, 1);
-        soundIdExplode1 = sp.load(gameView.activity, R.raw.explode, 1);
+        sound = Sound.getInstance(this);
+        sound.load("shot",R.raw.shot);
+        sound.load("explode",R.raw.explode);
 
         //Запуск новой игры
         newGame();
@@ -698,10 +700,5 @@ public class Game implements SoundPool.OnLoadCompleteListener {
 
         }
         return true;
-    }
-
-    @Override
-    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-        Log.i("onLoadComplete, sampleId" + sampleId + ", status = ", status + "");
     }
 }
