@@ -43,7 +43,13 @@ public class SpawnTimer extends Thread {
                 if(x<15) {
                     game.portal.spawn(Portal.BULLETS);
                 }else{
-                    game.portal.spawn(Portal.MONSTR1);
+                    x = r.nextInt(100);
+                    //Процент спауна монстр1
+                    if (x < 50) {
+                        game.portal.spawn(Portal.MONSTR1);
+                    } else {
+                        game.portal.spawn(Portal.MONSTR2);
+                    }
                 }
             }
 

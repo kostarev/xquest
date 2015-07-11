@@ -6,8 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -53,7 +51,7 @@ public class Game{
             monsterWidth, explosionsMax;
     public GameView gameView;
     public Hero hero;
-    public Bitmap monstr1Bitmap, shipflare;
+    public Bitmap monstrBitmap[], shipflare;
     public int[] boomWidth;
     public Bitmap asteroidBitmap[], planetBitmap[], boomBitmap[];
     public Crystal[] crystals;
@@ -70,6 +68,7 @@ public class Game{
     public SpawnTimer spawnTimer;
     public BulletTimer bulletTimer;
     public Thread bulletThread;
+    public Sound sound;
     private int gameScreenWidth, gameScreenHeight, screenX0,
             screenY0, screenX1, screenY1,
             screenWidth, screenHeight, centerRectWidth, centerRectHeight,
@@ -83,7 +82,6 @@ public class Game{
     private long waitTimeStart, fpsStartTime;
     private boolean running = false;
     private Thread spawnThread;
-    public Sound sound;
 
 
     private Game(GameView gameView) {
@@ -206,7 +204,9 @@ public class Game{
 
         //Монстры
         monsterWidth = 3 * kvant;
-        monstr1Bitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr1), monsterWidth, monsterWidth, true);
+        monstrBitmap = new Bitmap[2];
+        monstrBitmap[0] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr1), monsterWidth, monsterWidth, true);
+        monstrBitmap[1] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr2), monsterWidth, monsterWidth, true);
 
         //Рамка поля
         border = new Border(this);

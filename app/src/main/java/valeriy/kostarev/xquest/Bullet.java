@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 
 /**
  * Created by valerik on 14.12.2014.
@@ -98,6 +97,6 @@ public class Bullet {
         game.bullets[id] = null;
 
         //Звук взрыва
-        game.sound.play("explode", 1, (int) x, (int) y);
+        game.sound.play("explode", 0.3f, (int) x, (int) y);
     }
 }

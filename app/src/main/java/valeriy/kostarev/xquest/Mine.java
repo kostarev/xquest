@@ -11,10 +11,10 @@ import java.util.Random;
  */
 public class Mine{
 
-    private int health,id, x, y, setkaX, setkaY;
+    public Rect rect;
     protected Paint paint;
     protected Game game;
-    public Rect rect;
+    private int health, id, x, y, setkaX, setkaY;
     private float rotateAngle, rotateAngleInc;
     private int rotationWaitTime;
     private long lastRotationTime;
@@ -49,7 +49,7 @@ public class Mine{
         x = setkaX * game.elementWidth;
         y = setkaY * game.elementWidth;
         //Занимаем место
-        game.setka[setkaX][setkaY] = game.ASTEROID;
+        game.setka[setkaX][setkaY] = Game.ASTEROID;
 
         rect = new Rect(x + game.getGameScreenX0(), y + game.getGameScreenY0(), x + game.setkaWidth + game.getGameScreenX0(), y + game.setkaHeight + game.getGameScreenY0());
 
@@ -86,7 +86,7 @@ public class Mine{
         //Создаём взрыв
         game.newExplode(x+ rect.width()/2,y+ rect.height()/2,1);
         //Звук взрыва
-        //game.sp.play(game.soundIdExplode1, 1, 1, 0, 0, 1);
+        game.sound.play("explode", 1f, x, y);
 
         game.setka[setkaX][setkaY] = 0;
         game.mines[id] = null;

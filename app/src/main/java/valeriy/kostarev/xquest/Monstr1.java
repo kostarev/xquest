@@ -1,5 +1,5 @@
 package valeriy.kostarev.xquest;
-
+//Grunger
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public class Monstr1 extends Enemy {
 
-    private float rotateAngle, rotateAngleInc;
+    private float rotateAngle;
     private int rotationWaitTime;
     private long lastRotationTime;
 
@@ -22,7 +22,6 @@ public class Monstr1 extends Enemy {
         rect = new Rect((int) gameX, (int) gameY, (int) gameX + game.monsterWidth, (int) gameY + game.monsterWidth);
         rotateAngle = 0;
         rotationWaitTime = 10;
-        rotateAngleInc = 1;
         cost = 200;
     }
 
@@ -31,7 +30,7 @@ public class Monstr1 extends Enemy {
         updatePosition();
         canvas.save();
         canvas.rotate(rotateAngle, gameX + game.getGameScreenX0()+game.monsterWidth/2, gameY + game.getGameScreenY0()+game.monsterWidth/2);
-        canvas.drawBitmap(game.monstr1Bitmap, gameX + game.getGameScreenX0(), gameY + game.getGameScreenY0(), paint);
+        canvas.drawBitmap(game.monstrBitmap[0], gameX + game.getGameScreenX0(), gameY + game.getGameScreenY0(), paint);
         canvas.restore();
     }
 
