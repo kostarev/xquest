@@ -21,13 +21,13 @@ public class SpawnTimer extends Thread {
 
     @Override
     public void run() {
-        if(!game.isRunning()){
+        if (!game.isRunning()) {
             return;
         }
         setRunning(true);
 
-        while(running) {
-            while(!game.isRunning()){
+        while (running) {
+            while (!game.isRunning()) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(100);
                     lastSpawnTime = lastSpawnTime + 100;
@@ -35,22 +35,48 @@ public class SpawnTimer extends Thread {
                     e.printStackTrace();
                 }
             }
-            if(lastSpawnTime+sleepTime<System.currentTimeMillis()) {
-                lastSpawnTime = System.currentTimeMillis();
+            if (lastSpawnTime + sleepTime < System.currentTimeMillis()) {
+
                 Random r = new Random();
+                //Случайный портал (левый или правый)
+                boolean leftSide = r.nextBoolean();
+                leftSide = true;
+                if (leftSide) {
+                    game.portal.setLeftCharger(true);
+                } else {
+                    game.portal.setRightCharger(true);
+                }
+                //Ждём 1 секунду перед спауном, показываем анимацию разрядников
+                try {
+                    TimeUnit.MILLISECONDS.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                //Выключаем разрядники
+                game.portal.setLeftCharger(false);
+                game.portal.setRightCharger(false);
+
+
                 int x = r.nextInt(100);
                 //Процент спауна пуль
-                if(x<15) {
-                    game.portal.spawn(Portal.BULLETS);
-                }else{
-                    x = r.nextInt(100);
-                    //Процент спауна монстр1
-                    if (x < 50) {
-                        game.portal.spawn(Portal.MONSTR1);
-                    } else {
-                        game.portal.spawn(Portal.MONSTR2);
+                if (x < 15) {
+                    game.portal.spawn(Portal.BULLETS, leftSide);
+                } else {
+                    x = r.nextInt(3);
+                    switch (x) {
+                        case 0:
+                            game.portal.spawn(Portal.MONSTR1, leftSide);
+                            break;
+                        case 1:
+                            game.portal.spawn(Portal.MONSTR2, leftSide);
+                            break;
+                        case 2:
+                            game.portal.spawn(Portal.MONSTR3, leftSide);
+                            break;
                     }
                 }
+                lastSpawnTime = System.currentTimeMillis();
             }
 
             try {
@@ -58,6 +84,7 @@ public class SpawnTimer extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
         }
     }
 

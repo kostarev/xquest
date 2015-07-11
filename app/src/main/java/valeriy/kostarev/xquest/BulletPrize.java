@@ -3,15 +3,13 @@ package valeriy.kostarev.xquest;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.util.Log;
 
 import java.util.Random;
 
 /**
  * Created by valerik on 27.12.2014.
  */
-public class BulletPrize extends Enemy {
+public class BulletPrize extends Unit {
 
     private int liveTime;
     private long lastTime;
@@ -36,6 +34,7 @@ public class BulletPrize extends Enemy {
         cost = 500;
     }
 
+    @Override
     public void draw(Canvas canvas) {
         updatePosition();
         //canvas.drawBitmap(game.monstr1Bitmap, gameX + game.getGameScreenX0(), gameY + game.getGameScreenY0(), paint);
@@ -98,15 +97,16 @@ public class BulletPrize extends Enemy {
         int tmp = r.nextInt(100);
 
         if (tmp < 50) {
-            game.hero.setBulletType(game.hero.BULLET_2);
+            game.hero.setBulletType(Hero.BULLET_2);
         } else if (tmp < 80) {
-            game.hero.setBulletType(game.hero.BULLET_BACK);
+            game.hero.setBulletType(Hero.BULLET_BACK);
         } else {
-            game.hero.setBulletType(game.hero.BULLET_3);
+            game.hero.setBulletType(Hero.BULLET_3);
         }
 
     }
 
+    @Override
     public void killMe(boolean withExplosion) {
         //Уничтожаемся
         game.monsters[id] = null;
@@ -120,10 +120,12 @@ public class BulletPrize extends Enemy {
     }
 
     //Что бы пуля не сбивала
+    @Override
     public boolean hit() {
         return false;
     }
 
+    @Override
     public boolean intersect() {
         return game.hero.heroRect.intersect(this.rect);
     }

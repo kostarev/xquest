@@ -11,10 +11,10 @@ import java.util.Random;
  */
 public class Crystal {
 
+    public Rect rect;
     protected Paint paint;
     protected Game game;
     protected int id, x,y, setkaX, setkaY, objectCost;
-    public Rect rect;
 
     public Crystal(Game game, int id) {
         this.id = id;
@@ -47,7 +47,7 @@ public class Crystal {
         x = setkaX * game.elementWidth;
         y = setkaY * game.elementWidth;
         //Занимаем место кристалом
-        game.setka[setkaX][setkaY] = game.CRYSTAL;
+        game.setka[setkaX][setkaY] = Game.CRYSTAL;
 
         rect = new Rect(x+game.getGameScreenX0(),y+game.getGameScreenY0(),x+game.setkaWidth+game.getGameScreenX0(),y+game.setkaHeight+game.getGameScreenY0());
 
@@ -62,5 +62,7 @@ public class Crystal {
     public void killMe() {
         game.setka[setkaX][setkaY] = 0;
         game.crystals[id] = null;
+        //Звук кристалла
+        game.sound.play("crystall", 0.2f);
     }
 }

@@ -1,7 +1,6 @@
 package valeriy.kostarev.xquest;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
@@ -9,6 +8,11 @@ import android.graphics.Rect;
  * Created by valerik on 14.12.2014.
  */
 public class Bullet {
+
+    //Владелец пули
+    public static final byte OWNER_HERO = 0;
+    public static final byte OWNER_ENEMY = 1;
+
     private Paint paint;
     private float x, y, speedX, speedY;
     private int radius;
@@ -16,9 +20,12 @@ public class Bullet {
     private Rect bulletRect;
     private int id, liveTime;
     private long burnTime;
+    private int owner;
 
-    public Bullet(Game game, int id, float x, float y, float speedX, float speedY) {
+
+    public Bullet(Game game, int owner, int id, float x, float y, float speedX, float speedY, int color, int radius) {
         this.id = id;
+        this.owner = owner;
         this.game = game;
         this.x = x;
         this.y = y;
@@ -32,9 +39,9 @@ public class Bullet {
         burnTime = System.currentTimeMillis();
 
         paint = new Paint();
-        radius = game.kvant / 6 + 1;
+        this.radius = radius * game.kvant / 10 + 1;
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.WHITE);
+        paint.setColor(color);
     }
 
     public void draw(Canvas canvas) {
@@ -62,31 +69,44 @@ public class Bullet {
             killMe();
         }
 
-        //Монстры
-        for (Enemy enemy : game.monsters) {
-            if (enemy != null) {
-                if (bulletRect.intersect(enemy.rect)) {
-                    //Ударяем врага
-                    if (enemy.hit()) {
+        //Если пуля принадлежит герою
+        if (owner == OWNER_HERO) {
+            //Монстры
+            for (Unit unit : game.monsters) {
+                if (unit != null) {
+                    if (bulletRect.intersect(unit.rect)) {
+                        //Ударяем врага
+                        if (unit.hit()) {
+                            //Уничтожаем пулю
+                            killMe();
+                        }
+                    }
+                }
+            }
+
+
+            //Мины
+            for (Mine mine : game.mines) {
+                if (mine != null) {
+                    if (bulletRect.intersect(mine.rect)) {
+                        //Ударяем астероид
+                        mine.hit();
                         //Уничтожаем пулю
                         killMe();
                     }
                 }
             }
-        }
-
-
-        //Мины
-        for (Mine mine : game.mines) {
-            if (mine != null) {
-                if (bulletRect.intersect(mine.rect)) {
-                    //Ударяем астероид
-                    mine.hit();
+        } else
+            //Если пуля принадлежит врагу
+            if (owner == OWNER_ENEMY) {
+                //Ударяем героя
+                if (bulletRect.intersect(game.hero.hitRect)) {
                     //Уничтожаем пулю
                     killMe();
+                    //Убиваем героя
+                    game.hero.killMe();
                 }
             }
-        }
     }
 
     //Уничтожение пули

@@ -3,24 +3,23 @@ package valeriy.kostarev.xquest;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 
 /**
  * Created by valerik on 29.11.2014.
  */
-public class Joystick{
+public class Joystick {
 
     private int moveX, moveY;
     private Game game;
-    private int radius,x,y;
+    private int radius, x, y;
     private Paint paint;
     private boolean running;
     private int id = -1;
 
     public Joystick(Game game) {
         this.game = game;
-        radius = 10*game.kvant;
+        radius = 10 * game.kvant;
         x = game.getRealScreenWidth() - radius;
         y = game.getRealScreenHeight() - radius;
 
@@ -53,7 +52,7 @@ public class Joystick{
         }
 
         paint.setColor(Color.rgb(125, 125, 250));
-        canvas.drawCircle(moveX, moveY, radius/3, paint);
+        canvas.drawCircle(moveX, moveY, radius / 3, paint);
 
     }
 
@@ -106,16 +105,39 @@ public class Joystick{
 
             case MotionEvent.ACTION_UP:
                 if (event.getPointerId(pointerIndex) == id) {
+
+                    int dx = getDX();
+                    int dy = getDY();
+                    double speed = Math.sqrt(dx * dx + dy * dy);
+
                     setRunning(false);
                     clearPos();
                     id = -1;
+
+                    //Если скорость низкая, то останавливаем корабль
+                    if (speed < 15) {
+                        setPos(game.getRealScreenWidth() - radius, game.getRealScreenHeight() - radius);
+                        game.hero.setSpeed(0, 0);
+                    }
                 }
 
             case MotionEvent.ACTION_POINTER_UP: // прерывания касаний
                 if (event.getPointerId(pointerIndex) == id) {
+
+                    int dx = getDX();
+                    int dy = getDY();
+                    double speed = Math.sqrt(dx * dx + dy * dy);
+
                     id = -1;
                     setRunning(false);
                     clearPos();
+
+                    //Если скорость низкая, то останавливаем корабль
+
+                    if (speed < 15) {
+                        setPos(game.getRealScreenWidth() - radius, game.getRealScreenHeight() - radius);
+                        game.hero.setSpeed(0, 0);
+                    }
                 }
                 break;
 
@@ -124,10 +146,7 @@ public class Joystick{
 
 
     public boolean isInside(Float x, Float y) {
-        if ((x - this.x) * (x - this.x) + (y - this.y) * (y - this.y) <= radius * radius) {
-            return true;
-        }
-        return false;
+        return (x - this.x) * (x - this.x) + (y - this.y) * (y - this.y) <= radius * radius;
     }
 
     public boolean isRunning() {

@@ -7,7 +7,7 @@ import android.graphics.Rect;
 /**
  * Created by valerik on 07.12.2014.
  */
-public class Enemy{
+public class Unit {
     protected Game game;
     protected int health, id ,sleepTime, cost;
     protected float gameX,gameY,speedX,speedY ,fullSpeed;
@@ -15,7 +15,7 @@ public class Enemy{
     protected long lastTime;
     protected Rect rect;
 
-    public Enemy(Game game,int id){
+    public Unit(Game game, int id) {
         this.game = game;
         this.id = id;
 

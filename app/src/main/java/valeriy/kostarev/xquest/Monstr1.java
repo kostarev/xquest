@@ -8,11 +8,11 @@ import java.util.Random;
 /**
  * Created by valerik on 07.12.2014.
  */
-public class Monstr1 extends Enemy {
+public class Monstr1 extends Unit {
 
-    private float rotateAngle;
-    private int rotationWaitTime;
-    private long lastRotationTime;
+    protected float rotateAngle;
+    protected int rotationWaitTime;
+    protected long lastRotationTime;
 
     public Monstr1(Game game, int id) {
         super(game, id);

@@ -3,6 +3,7 @@ package valeriy.kostarev.xquest;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
@@ -174,10 +175,10 @@ public class Hero {
 
 
         //Проверяем не наехали ли на врага
-        for (Enemy enemy : game.monsters) {
-            if (enemy != null) {
-                if (enemy.intersect()) {
-                    enemy.hero();
+        for (Unit unit : game.monsters) {
+            if (unit != null) {
+                if (unit.intersect()) {
+                    unit.hero();
                 }
             }
         }
@@ -193,7 +194,9 @@ public class Hero {
     public void setSpeed(float dx, float dy) {
         this.dx = dx;
         this.dy = dy;
-        rotateAngle = (float) (Math.atan2(dy, dx) * 180 / Math.PI) + 90;
+        if (dx != 0 || dy != 0) {
+            rotateAngle = (float) (Math.atan2(dy, dx) * 180 / Math.PI) + 90;
+        }
     }
 
     //Смерть героя
@@ -279,12 +282,7 @@ public class Hero {
 
     //Создание пули на экране
     public void newBullet(float x, float y, float speedX, float speedY) {
-        for (int i = 0; i < game.bullets.length; i++) {
-            if (game.bullets[i] == null) {
-                game.bullets[i] = new Bullet(game, i, x, y, speedX, speedY);
-                break;
-            }
-        }
+        game.newBullet(Bullet.OWNER_HERO, x, y, speedX, speedY, Color.WHITE, 1);
     }
 
 

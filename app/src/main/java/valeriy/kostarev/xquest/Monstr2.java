@@ -3,14 +3,13 @@ package valeriy.kostarev.xquest;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.util.Log;
 
 import java.util.Random;
 
 /**
  * Created by valerik on 07.12.2014.
  */
-public class Monstr2 extends Enemy {
+public class Monstr2 extends Unit {
 
     private double angleRad, dAngle;
     private float rotateAngle, x, y;
@@ -20,14 +19,16 @@ public class Monstr2 extends Enemy {
 
     public Monstr2(Game game, int id) {
         super(game, id);
-        speedX = game.kvant / 10 + 1;
-        speedY = game.kvant / 10 + 1;
+        speedX = game.kvant / 20 + 1;
+        speedY = game.kvant / 20 + 1;
 
         fullSpeed = (int) Math.sqrt(speedX * speedX + speedY * speedY);
         rect = new Rect((int) gameX, (int) gameY, (int) gameX + game.monsterWidth, (int) gameY + game.monsterWidth);
         rotateAngle = 0;
         rotationWaitTime = 10;
         cost = 300;
+        //Меняет направление движения через
+        sleepTime = 3000;
 
         Random r = new Random();
         radius = game.kvant * r.nextInt(20) + 10;
@@ -39,19 +40,21 @@ public class Monstr2 extends Enemy {
         }
     }
 
-
+    @Override
     public void draw(Canvas canvas) {
         updatePosition();
         canvas.save();
         canvas.rotate(rotateAngle, gameX + game.getGameScreenX0() + game.monsterWidth / 2, gameY + game.getGameScreenY0() + game.monsterWidth / 2);
         canvas.drawBitmap(game.monstrBitmap[1], gameX + game.getGameScreenX0(), gameY + game.getGameScreenY0(), paint);
         canvas.restore();
+
         /*
         paint.setColor(Color.rgb(255, 0, 0));
         paint.setStyle(Paint.Style.STROKE);
         canvas.drawCircle(x + game.getGameScreenX0(), y + game.getGameScreenY0(), radius, paint);
         canvas.drawPoint(x + game.getGameScreenX0(), y + game.getGameScreenY0(), paint);
         */
+
     }
 
     @Override
@@ -74,9 +77,10 @@ public class Monstr2 extends Enemy {
             x = (float) (gameX + radius * Math.cos(angleRad));
             y = (float) (gameY + radius * Math.sin(angleRad));
 
-            if (x < 0 || x > game.getGameScreenWidth() || y < 0 || y > game.getGameScreenHeight()) {
+            if (x < 0 || x > game.getGameScreenWidth() - game.monsterWidth || y < 0 || y > game.getGameScreenHeight() - game.monsterWidth) {
                 continue;
             } else {
+                angleRad = angleRad + Math.PI;
                 ok = true;
             }
         }
@@ -90,8 +94,8 @@ public class Monstr2 extends Enemy {
         x = x + speedX;
         y = y + speedY;
         angleRad = angleRad + dAngle;
-        if (angleRad > 2 * Math.PI) {
-            angleRad = 0;
+        if (angleRad > 2 * Math.PI || angleRad < -2 * Math.PI) {
+            angleRad = Math.acos(Math.cos(angleRad));
         }
         gameX = (float) (radius * Math.cos(angleRad) + x);
         gameY = (float) (radius * Math.sin(angleRad) + y);
@@ -127,7 +131,6 @@ public class Monstr2 extends Enemy {
                 speedY = -speedY;
             }
             sleepTime = r.nextInt(30000) + 3000;
-            Log.i("random", "speedX=" + speedX + " speedY=" + speedY);
         }
 
         if (lastRotationTime + rotationWaitTime < System.currentTimeMillis()) {
@@ -136,11 +139,13 @@ public class Monstr2 extends Enemy {
         }
     }
 
+    @Override
     public void hero() {
         game.hero.killMe();
         killMe();
     }
 
+    @Override
     public boolean intersect() {
         return game.hero.hitRect.intersect(this.rect);
     }

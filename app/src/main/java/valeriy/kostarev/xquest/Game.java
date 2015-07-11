@@ -16,7 +16,7 @@ import java.util.Random;
 /**
  * Created by valerik on 23.11.2014.
  */
-public class Game{
+public class Game {
 
     //Константы направления
     public static final byte CRYSTAL = 1;
@@ -55,7 +55,7 @@ public class Game{
     public int[] boomWidth;
     public Bitmap asteroidBitmap[], planetBitmap[], boomBitmap[];
     public Crystal[] crystals;
-    public Enemy[] monsters;
+    public Unit[] monsters;
     public Planet[] planets;
     public Pulsar[] pulsars;
     public Mine[] mines;
@@ -63,7 +63,7 @@ public class Game{
     public Portal portal;
     public byte[][] setka;
     public Border border;
-    public MyAnimation crystallAnimation, mineAnimation, pulsarAnimation;
+    public MyAnimation crystallAnimation, mineAnimation, pulsarAnimation, dischargeAnimation;
     public Explosion[] explosions;
     public SpawnTimer spawnTimer;
     public BulletTimer bulletTimer;
@@ -204,9 +204,10 @@ public class Game{
 
         //Монстры
         monsterWidth = 3 * kvant;
-        monstrBitmap = new Bitmap[2];
+        monstrBitmap = new Bitmap[3];
         monstrBitmap[0] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr1), monsterWidth, monsterWidth, true);
         monstrBitmap[1] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr2), monsterWidth, monsterWidth, true);
+        monstrBitmap[2] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr3), monsterWidth, monsterWidth, true);
 
         //Рамка поля
         border = new Border(this);
@@ -249,8 +250,9 @@ public class Game{
 
         //Загрузка звуков.
         sound = Sound.getInstance(this);
-        sound.load("shot",R.raw.shot);
-        sound.load("explode",R.raw.explode);
+        sound.load("shot", R.raw.shot);
+        sound.load("explode", R.raw.explode);
+        sound.load("crystall", R.raw.crystall);
 
         //Запуск новой игры
         newGame();
@@ -261,6 +263,17 @@ public class Game{
             instance = new Game(gameView);
         }
         return instance;
+    }
+
+    //Создание пули
+    public void newBullet(int owner, float x, float y, float speedX, float speedY, int color, int radius) {
+        //Создание пули на экране
+        for (int i = 0; i < bullets.length; i++) {
+            if (bullets[i] == null) {
+                bullets[i] = new Bullet(this, owner, i, x, y, speedX, speedY, color, radius);
+                break;
+            }
+        }
     }
 
     public void wait(int time) {
@@ -344,7 +357,7 @@ public class Game{
         }
 
         //Монстры
-        monsters = new Enemy[0];
+        monsters = new Unit[0];
         spawnThread = new Thread(spawnTimer);
         try {
             spawnThread.start();
@@ -400,7 +413,7 @@ public class Game{
         portal.draw(canvas);
 
         //Кристалы
-        for (Crystal crystal: crystals) {
+        for (Crystal crystal : crystals) {
             if (crystal != null) {
                 crystal.draw(canvas);
             }
@@ -414,15 +427,15 @@ public class Game{
         }
 
         //Монстры
-        for (Enemy enemy : monsters) {
-            if (enemy != null) {
-                enemy.draw(canvas);
+        for (Unit unit : monsters) {
+            if (unit != null) {
+                unit.draw(canvas);
             }
         }
 
 
         //Пули
-        for (Bullet bullet: bullets) {
+        for (Bullet bullet : bullets) {
             if (bullet != null) {
                 bullet.draw(canvas);
             }
@@ -464,7 +477,7 @@ public class Game{
         canvas.drawText("FPS: " + FPS(), realScreenWidth - panelWidth + 2 * kvant, 18 * kvant, paint);
 
         if (hero.getBulletType() != Hero.BULLET_NORMAL) {
-            String text = hero.getBulletType() + " : " + (int)(bulletTimer.getTime()/1000);
+            String text = hero.getBulletType() + " : " + (int) (bulletTimer.getTime() / 1000);
             canvas.drawText(text, realScreenWidth - panelWidth + 2 * kvant, 22 * kvant, paint);
         }
     }
