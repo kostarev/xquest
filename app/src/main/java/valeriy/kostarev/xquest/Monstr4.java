@@ -11,6 +11,8 @@ public class Monstr4 extends Monstr1 {
     public Monstr4(Game game, int id) {
         super(game, id);
         cost = 500;
+        //Меняет направление движения через
+        sleepTime = 8000;
     }
 
 

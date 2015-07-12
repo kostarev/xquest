@@ -62,8 +62,8 @@ public class SpawnTimer extends Thread {
                 if (x < 15) {
                     game.portal.spawn(Portal.BULLETS, leftSide);
                 } else {
-                    x = r.nextInt(4);
-                    //x = 3;
+                    x = r.nextInt(5);
+
                     switch (x) {
                         case 0:
                             game.portal.spawn(Portal.MONSTR1, leftSide);
@@ -76,6 +76,9 @@ public class SpawnTimer extends Thread {
                             break;
                         case 3:
                             game.portal.spawn(Portal.MONSTR4, leftSide);
+                            break;
+                        case 4:
+                            game.portal.spawn(Portal.MONSTR5, leftSide);
                             break;
                     }
                 }

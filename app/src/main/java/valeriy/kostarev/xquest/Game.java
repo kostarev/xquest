@@ -20,7 +20,7 @@ public class Game {
 
     //Константы направления
     public static final byte CRYSTAL = 1;
-    public static final byte ASTEROID = 2;
+    public static final byte MINE = 2;
     public static final byte FREEAREA = 3;
 
     public static final int MENU_EXIT = 0;
@@ -205,11 +205,12 @@ public class Game {
 
         //Монстры
         monsterWidth = 3 * kvant;
-        monstrBitmap = new Bitmap[4];
+        monstrBitmap = new Bitmap[5];
         monstrBitmap[0] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr1), monsterWidth, monsterWidth, true);
         monstrBitmap[1] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr2), monsterWidth, monsterWidth, true);
         monstrBitmap[2] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr3), monsterWidth, monsterWidth, true);
         monstrBitmap[3] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr4), monsterWidth, monsterWidth, true);
+        monstrBitmap[4] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr4), monsterWidth, monsterWidth, true);
 
         //Рамка поля
         border = new Border(this);
@@ -313,6 +314,40 @@ public class Game {
         }
     }
 
+    //Установка мины
+    public void putMine(int x, int y) {
+        int setkaX = (x + monsterWidth / 2) / elementWidth;
+        int setkaY = (y + monsterWidth / 2) / elementWidth;
+        if (setkaX > setkaWidth - 1) {
+            setkaX = setkaWidth - 1;
+        }
+
+        if (setkaY > setkaHeight - 1) {
+            setkaY = setkaHeight - 1;
+        }
+
+        //Если есть место
+        if (setka[setkaX][setkaY] == 0) {
+            //увеличиваем размер массива мин
+            if (mines == null) {
+                mines = new Mine[1];
+            } else {
+                Mine[] tmp = mines;
+                mines = new Mine[mines.length + 1];
+
+                for (int i = 0; i < tmp.length; i++) {
+                    mines[i] = tmp[i];
+                }
+            }
+
+            int id = mines.length - 2;
+
+            mines[id] = new Mine(this, id, setkaX, setkaY);
+        }
+    }
+
+
+    //Инициализация уровня
     public void initWave() {
 
 
@@ -485,6 +520,7 @@ public class Game {
         }
 
         canvas.drawText(gameTime + "", realScreenWidth - panelWidth + 2 * kvant, 26 * kvant, paint);
+        canvas.drawText("Мин: " + mines.length, realScreenWidth - panelWidth + 2 * kvant, 30 * kvant, paint);
 
         //Время игры
         if (isRunning() && !isWaiting()) {

@@ -89,7 +89,7 @@ public class Bullet {
             for (Mine mine : game.mines) {
                 if (mine != null) {
                     if (bulletRect.intersect(mine.rect)) {
-                        //Ударяем астероид
+                        //Ударяем мину
                         mine.hit();
                         //Уничтожаем пулю
                         killMe();

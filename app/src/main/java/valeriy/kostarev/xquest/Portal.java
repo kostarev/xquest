@@ -16,6 +16,7 @@ public class Portal {
     public static final int MONSTR2 = 2;
     public static final int MONSTR3 = 3;
     public static final int MONSTR4 = 4;
+    public static final int MONSTR5 = 5;
     private Game game;
     private Paint paint;
     private Bitmap portalLeftBitmap, portalRightBitmap;
@@ -98,23 +99,29 @@ public class Portal {
             case MONSTR4:
                 game.monsters[id] = new Monstr4(game, id);
                 break;
+            case MONSTR5:
+                game.monsters[id] = new Monstr5(game, id);
+                break;
             default:
                 game.monsters[id] = new Monstr1(game, id);
                 break;
 
         }
 
-        Log.i("Portal", "id=" + id + " monsters.length=" + game.monsters.length + " type=" + type);
-        game.monsters[id].setGameY(game.getGameScreenHeight() / 2);
-
-
-        if (leftSide) {
-            //Left portal
-            game.monsters[id].setGameX(portalWidth);
+        if (game.monsters[id] != null) {
+            //Log.i("Portal", "id=" + id + " monsters.length=" + game.monsters.length + " type=" + type);
+            game.monsters[id].setGameY(game.getGameScreenHeight() / 2);
+            if (leftSide) {
+                //Left portal
+                game.monsters[id].setGameX(portalWidth);
+            } else {
+                //right portal
+                game.monsters[id].setGameX(game.getGameScreenWidth() - portalWidth);
+                game.monsters[id].speedX = -game.monsters[id].speedX;
+            }
         } else {
-            //right portal
-            game.monsters[id].setGameX(game.getGameScreenWidth() - portalWidth);
-            game.monsters[id].speedX = -game.monsters[id].speedX;
+            Log.i("monsters[id]==null", "id=" + id + " monsters.length=" + game.monsters.length + " type=" + type);
         }
+
     }
 }

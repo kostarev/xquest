@@ -11,7 +11,7 @@ import java.util.Random;
  */
 public class Monstr1 extends Unit {
 
-    protected float rotateAngle;
+    protected float rotateAngle, dAngle;
     protected int rotationWaitTime;
     protected long lastRotationTime;
 
@@ -22,6 +22,8 @@ public class Monstr1 extends Unit {
         fullSpeed = (int) Math.sqrt(speedX * speedX + speedY * speedY);
         rect = new Rect((int) gameX, (int) gameY, (int) gameX + game.monsterWidth, (int) gameY + game.monsterWidth);
         rotateAngle = 0;
+        //Скорость вращения вокруг своей оси
+        dAngle = 1;
         rotationWaitTime = 1;
         cost = 200;
     }
@@ -84,7 +86,7 @@ public class Monstr1 extends Unit {
 
         if (lastRotationTime + rotationWaitTime < game.time()) {
             lastRotationTime = game.time();
-            rotateAngle++;
+            rotateAngle += dAngle;
         }
     }
 

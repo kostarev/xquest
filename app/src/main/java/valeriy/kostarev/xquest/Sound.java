@@ -13,7 +13,7 @@ public class Sound implements SoundPool.OnLoadCompleteListener {
     public SoundPool sp;
     private Hashtable<String, Integer> sounds;
     private Game game;
-    private int maxDistance, distanceD;
+    private int maxDistance;
 
     private Sound(Game game) {
 
@@ -21,9 +21,8 @@ public class Sound implements SoundPool.OnLoadCompleteListener {
         sp.setOnLoadCompleteListener(this);
         this.game = game;
         sounds = new Hashtable();
-        //max distance in game Diagonal of game screen
+        //Максимальная дистанция в игре - диагональ игровой области
         maxDistance = (int) Math.sqrt(game.getGameScreenWidth() * game.getGameScreenWidth() + game.getGameScreenHeight() * game.getGameScreenHeight());
-        distanceD = maxDistance / 10;
     }
 
     //Singleton
@@ -34,31 +33,31 @@ public class Sound implements SoundPool.OnLoadCompleteListener {
         return instance;
     }
 
-    //load sound
+    //Загрузка звука
     public void load(String key, int fileId) {
         int soundId = sp.load(game.gameView.activity, fileId, 1);
         sounds.put(key, soundId);
     }
 
-    //play sound
+    //Проигрывание звука
     public void play(String key, float maxVolume) {
         int soundId = sounds.get(key);
         sp.play(soundId, maxVolume, maxVolume, 0, 0, 1);
     }
 
-    //play sound with koordinates
+    //Проигрывание звука с учетом координат источника
     public void play(String key, float maxVolume, int x, int y) {
         int soundId = sounds.get(key);
 
         float leftVolume = 1;
         float rightVolume = 1;
 
-        //y distance to sound source
+        //Расстояние по оси Y до источника звука
         int yDistance = Math.abs(y - Math.abs(Math.abs(game.getGameScreenY0()) + game.getRealScreenHeight() / 2));
 
-        //distance by left side of screen to source
+        //Расстояние от левой стороны экрана до источника звука
         int leftDistance = Math.abs(x - Math.abs(game.getGameScreenX0()));
-        //distance by right side of screen to source
+        //Расстояние от правой стороны экрана до источника звука
         int rightDistance;
         if (x + game.getGameScreenX0() < 0) {
             rightDistance = leftDistance + game.getRealScreenWidth();
@@ -70,24 +69,11 @@ public class Sound implements SoundPool.OnLoadCompleteListener {
         rightVolume = 1f - (float) rightDistance / maxDistance;
 
 
-        //volume koef of y distance
+        //Коэффициент, учитывающий удалённость по оси Y
         float volumeKoef = 1f - (float) yDistance / maxDistance;
 
         rightVolume = rightVolume * maxVolume * volumeKoef;
         leftVolume = leftVolume * maxVolume * volumeKoef;
-
-        /*
-        if (rightVolume < 0) {
-            rightVolume = 0;
-        } else if (rightVolume > 1) {
-            rightVolume = 1;
-        }
-
-        if (leftVolume < 0) {
-            leftVolume = 0;
-        } else if (leftVolume > 1) {
-            leftVolume = 1;
-        }*/
 
         sp.play(soundId, leftVolume, rightVolume, 0, 0, 1);
 
@@ -95,6 +81,5 @@ public class Sound implements SoundPool.OnLoadCompleteListener {
 
     @Override
     public void onLoadComplete(SoundPool soundPool, int i, int i1) {
-
     }
 }
