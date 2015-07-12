@@ -201,7 +201,7 @@ public class Game {
 
         //Порталы (сразу обе стороны)
         portal = new Portal(this);
-        spawnTimer = new SpawnTimer(this);
+        spawnTimer = SpawnTimer.getInstance(this);
 
         //Монстры
         monsterWidth = 3 * kvant;
@@ -302,6 +302,14 @@ public class Game {
         bombs = 3;
         //Инициализация волны
         initWave();
+
+        //Поток рожающий монстров
+        spawnThread = new Thread(spawnTimer);
+        try {
+            spawnThread.start();
+        } catch (Exception e) {
+            Log.i("Game - spawnThread -", e.toString());
+        }
     }
 
     //Создание взрыва
@@ -396,12 +404,6 @@ public class Game {
 
         //Монстры
         monsters = new Unit[0];
-        spawnThread = new Thread(spawnTimer);
-        try {
-            spawnThread.start();
-        } catch (Exception e) {
-            Log.i("Game - initXY -", e.toString());
-        }
 
         //Очищаем массив пуль
         int bulletsMax = 512;

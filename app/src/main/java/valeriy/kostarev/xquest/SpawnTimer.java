@@ -11,13 +11,24 @@ public class SpawnTimer extends Thread {
     private boolean running;
     private long lastSpawnTime;
     private int sleepTime;
+    private static SpawnTimer instance;
 
-    public SpawnTimer(Game game) {
+    //Singleton
+    public static synchronized SpawnTimer getInstance(Game game) {
+        if (instance == null) {
+            instance = new SpawnTimer(game);
+        }
+        return instance;
+    }
+
+    private SpawnTimer(Game game) {
         this.game = game;
 
         //Время задержки между спауном врагов
         sleepTime = 10000;
     }
+
+
 
     @Override
     public void run() {
@@ -39,7 +50,6 @@ public class SpawnTimer extends Thread {
                 Random r = new Random();
                 //Случайный портал (левый или правый)
                 boolean leftSide = r.nextBoolean();
-                leftSide = true;
                 if (leftSide) {
                     game.portal.setLeftCharger(true);
                 } else {
