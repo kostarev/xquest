@@ -1,6 +1,5 @@
 package valeriy.kostarev.xquest;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -15,28 +14,20 @@ public class BulletTimer extends Thread {
 
     public BulletTimer(Game game) {
         this.game = game;
-        //Время жизни типа пуль
+        //Время действия новых пуль
         sleepTime = 30000;
     }
 
     @Override
     public void run() {
         setRunning(true);
-        lastSpawnTime = System.currentTimeMillis();
+        lastSpawnTime = game.time();
 
-        while(running) {
-            while(!game.isRunning()){
-                try {
-                    TimeUnit.MILLISECONDS.sleep(100);
-                    lastSpawnTime = lastSpawnTime + 100;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        while (running) {
             //Время истекло
-            if(lastSpawnTime+sleepTime<System.currentTimeMillis()) {
+            if (lastSpawnTime + sleepTime < game.time()) {
                 setRunning(false);
-                game.hero.setBulletType(game.hero.BULLET_NORMAL);
+                game.hero.setBulletType(Hero.BULLET_NORMAL);
             }
 
             try {
@@ -47,8 +38,8 @@ public class BulletTimer extends Thread {
         }
     }
 
-    public long getTime(){
-        return lastSpawnTime+sleepTime-System.currentTimeMillis();
+    public long getTime() {
+        return lastSpawnTime + sleepTime - game.time();
     }
 
     public void setRunning(boolean running) {

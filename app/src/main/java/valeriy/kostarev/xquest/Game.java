@@ -82,6 +82,7 @@ public class Game {
     private long waitTimeStart, fpsStartTime;
     private boolean running = false;
     private Thread spawnThread;
+    private long gameTime;
 
 
     private Game(GameView gameView) {
@@ -204,10 +205,11 @@ public class Game {
 
         //Монстры
         monsterWidth = 3 * kvant;
-        monstrBitmap = new Bitmap[3];
+        monstrBitmap = new Bitmap[4];
         monstrBitmap[0] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr1), monsterWidth, monsterWidth, true);
         monstrBitmap[1] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr2), monsterWidth, monsterWidth, true);
         monstrBitmap[2] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr3), monsterWidth, monsterWidth, true);
+        monstrBitmap[3] = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(gameView.activity.getResources(), R.drawable.monstr4), monsterWidth, monsterWidth, true);
 
         //Рамка поля
         border = new Border(this);
@@ -286,6 +288,7 @@ public class Game {
     }
 
     public void newGame() {
+        gameTime = 0;
         //Наш корабль
         hero = new Hero(this);
         //Жизни
@@ -480,6 +483,19 @@ public class Game {
             String text = hero.getBulletType() + " : " + (int) (bulletTimer.getTime() / 1000);
             canvas.drawText(text, realScreenWidth - panelWidth + 2 * kvant, 22 * kvant, paint);
         }
+
+        canvas.drawText(gameTime + "", realScreenWidth - panelWidth + 2 * kvant, 26 * kvant, paint);
+
+        //Время игры
+        if (isRunning() && !isWaiting()) {
+            gameTime += 1000 / FPS;
+        }
+    }
+
+    //Игровое время (На самом деле счётчик отрисованных кадров, используем его для вычисления временных отрезков)
+    //единица = примерно 0,03-0,04 секунды. Счётчик тикает только во время игры, но не во время паузы.
+    public Long time() {
+        return gameTime;
     }
 
     private int FPS() {

@@ -25,10 +25,10 @@ public class Monstr2 extends Unit {
         fullSpeed = (int) Math.sqrt(speedX * speedX + speedY * speedY);
         rect = new Rect((int) gameX, (int) gameY, (int) gameX + game.monsterWidth, (int) gameY + game.monsterWidth);
         rotateAngle = 0;
-        rotationWaitTime = 10;
+        rotationWaitTime = 1;
         cost = 300;
         //Меняет направление движения через
-        sleepTime = 3000;
+        sleepTime = 6000;
 
         Random r = new Random();
         radius = game.kvant * r.nextInt(20) + 10;
@@ -119,8 +119,8 @@ public class Monstr2 extends Unit {
         rect.set((int) gameX + game.getGameScreenX0(), (int) gameY + game.getGameScreenY0(), (int) gameX + game.monsterWidth + game.getGameScreenX0(), (int) gameY + game.monsterWidth + game.getGameScreenY0());
 
         //Через случайный промежуток времени меняем скорости по осям на случайные
-        if (lastTime < System.currentTimeMillis() - sleepTime) {
-            lastTime = System.currentTimeMillis();
+        if (lastTime < game.time() - sleepTime) {
+            lastTime = game.time();
             Random r = new Random();
             speedX = r.nextFloat() * fullSpeed;
             speedY = (float) Math.sqrt(fullSpeed * fullSpeed - speedX * speedX);
@@ -133,8 +133,8 @@ public class Monstr2 extends Unit {
             sleepTime = r.nextInt(30000) + 3000;
         }
 
-        if (lastRotationTime + rotationWaitTime < System.currentTimeMillis()) {
-            lastRotationTime = System.currentTimeMillis();
+        if (lastRotationTime + rotationWaitTime < game.time()) {
+            lastRotationTime = game.time();
             rotateAngle++;
         }
     }

@@ -9,13 +9,13 @@ import java.util.Random;
 /**
  * Created by valerik on 27.12.2014.
  */
-public class BulletPrize extends Unit {
+public class BulletBonus extends Unit {
 
     private int liveTime;
     private long lastTime;
     private Paint paintText;
 
-    public BulletPrize(Game game, int id) {
+    public BulletBonus(Game game, int id) {
         super(game, id);
         speedX = game.kvant;
         speedY = (int) (0.5 * game.kvant);
@@ -26,9 +26,9 @@ public class BulletPrize extends Unit {
         paintText.setColor(Color.BLACK);
         paintText.setTextSize(2 * game.kvant);
 
-        lastTime = System.currentTimeMillis();
-        //Время жизни, мс
-        liveTime = 10000;
+        lastTime = game.time();
+        //Время жизни
+        liveTime = 20000;
 
         //Награда за поимку
         cost = 500;
@@ -39,7 +39,7 @@ public class BulletPrize extends Unit {
         updatePosition();
         //canvas.drawBitmap(game.monstr1Bitmap, gameX + game.getGameScreenX0(), gameY + game.getGameScreenY0(), paint);
         canvas.drawCircle(gameX + game.getGameScreenX0(), gameY + game.getGameScreenY0(), 2 * game.kvant, paint);
-        canvas.drawText((liveTime / 1000) + "", gameX + game.getGameScreenX0() - (int) paint.measureText("9") / 2, gameY + game.getGameScreenY0() + (int) paint.getTextSize() / 2, paintText);
+        canvas.drawText((liveTime / 1000) + "", gameX + game.getGameScreenX0() - (int) paint.measureText("9"), gameY + game.getGameScreenY0() + (int) paint.getTextSize() / 2, paintText);
         if (liveTime < 0) {
             killMe(true);
             return;
@@ -49,13 +49,12 @@ public class BulletPrize extends Unit {
     //Хаотичное движение
     public void updatePosition() {
         if (!game.isRunning() || game.isWaiting()) {
-            lastTime = System.currentTimeMillis();
             return;
         }
 
 
-        liveTime = (int) (liveTime - (System.currentTimeMillis() - lastTime));
-        lastTime = System.currentTimeMillis();
+        liveTime = (int) (liveTime - (game.time() - lastTime));
+        lastTime = game.time();
 
         gameX = gameX + speedX;
         gameY = gameY + speedY;

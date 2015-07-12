@@ -1,5 +1,6 @@
 package valeriy.kostarev.xquest;
 //Grunger
+
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
@@ -16,12 +17,12 @@ public class Monstr1 extends Unit {
 
     public Monstr1(Game game, int id) {
         super(game, id);
-        speedX = game.kvant/6+1;
-        speedY = game.kvant/6+1;
+        speedX = game.kvant / 6 + 1;
+        speedY = game.kvant / 6 + 1;
         fullSpeed = (int) Math.sqrt(speedX * speedX + speedY * speedY);
         rect = new Rect((int) gameX, (int) gameY, (int) gameX + game.monsterWidth, (int) gameY + game.monsterWidth);
         rotateAngle = 0;
-        rotationWaitTime = 10;
+        rotationWaitTime = 1;
         cost = 200;
     }
 
@@ -29,14 +30,14 @@ public class Monstr1 extends Unit {
     public void draw(Canvas canvas) {
         updatePosition();
         canvas.save();
-        canvas.rotate(rotateAngle, gameX + game.getGameScreenX0()+game.monsterWidth/2, gameY + game.getGameScreenY0()+game.monsterWidth/2);
+        canvas.rotate(rotateAngle, gameX + game.getGameScreenX0() + game.monsterWidth / 2, gameY + game.getGameScreenY0() + game.monsterWidth / 2);
         canvas.drawBitmap(game.monstrBitmap[0], gameX + game.getGameScreenX0(), gameY + game.getGameScreenY0(), paint);
         canvas.restore();
     }
 
     //Хаотичное движение
     public void updatePosition() {
-        if(!game.isRunning() || game.isWaiting()){
+        if (!game.isRunning() || game.isWaiting()) {
             return;
         }
         gameX = gameX + speedX;
@@ -61,8 +62,8 @@ public class Monstr1 extends Unit {
         rect.set((int) gameX + game.getGameScreenX0(), (int) gameY + game.getGameScreenY0(), (int) gameX + game.monsterWidth + game.getGameScreenX0(), (int) gameY + game.monsterWidth + game.getGameScreenY0());
 
         //Через случайный промежуток времени меняем скорости по осям на случайные
-        if (lastTime < System.currentTimeMillis() - sleepTime) {
-            lastTime = System.currentTimeMillis();
+        if (lastTime < game.time() - sleepTime) {
+            lastTime = game.time();
 
 
             Random r = new Random();
@@ -81,8 +82,8 @@ public class Monstr1 extends Unit {
 
         }
 
-        if(lastRotationTime+rotationWaitTime<System.currentTimeMillis()) {
-            lastRotationTime = System.currentTimeMillis();
+        if (lastRotationTime + rotationWaitTime < game.time()) {
+            lastRotationTime = game.time();
             rotateAngle++;
         }
     }

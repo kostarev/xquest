@@ -43,8 +43,8 @@ public class Monstr3 extends Monstr1 {
             return;
         }
         //Через случайный промежуток времени стреляем в случайном направлении
-        if (shotlastTime < System.currentTimeMillis() - shotSleepTime) {
-            shotlastTime = System.currentTimeMillis();
+        if (shotlastTime < game.time() - shotSleepTime) {
+            shotlastTime = game.time();
             Random r = new Random();
             float dxInc = r.nextFloat() * bulletMaxSpeed;
             float dyInc = (float) Math.sqrt(fullSpeed * fullSpeed - speedX * speedX);

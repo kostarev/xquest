@@ -34,9 +34,9 @@ public class Bullet {
         bulletRect = new Rect((int) x, (int) y, (int) (x + radius), (int) (y + radius));
 
         //Время жизни пули, мс
-        liveTime = 20 * 1000;
+        liveTime = 20000;
         //Время рождения пули
-        burnTime = System.currentTimeMillis();
+        burnTime = game.time();
 
         paint = new Paint();
         this.radius = radius * game.kvant / 10 + 1;
@@ -55,7 +55,7 @@ public class Bullet {
         }
 
         //Если пуля живёт дольше liveTime, убиваем пулю
-        if (burnTime + liveTime < System.currentTimeMillis()) {
+        if (burnTime + liveTime < game.time()) {
             game.bullets[id] = null;
         }
 

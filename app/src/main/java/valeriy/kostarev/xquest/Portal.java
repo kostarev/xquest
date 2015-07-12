@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.Log;
 
 /**
  * Created by valerik on 25.12.2014.
@@ -14,6 +15,7 @@ public class Portal {
     public static final int MONSTR1 = 1;
     public static final int MONSTR2 = 2;
     public static final int MONSTR3 = 3;
+    public static final int MONSTR4 = 4;
     private Game game;
     private Paint paint;
     private Bitmap portalLeftBitmap, portalRightBitmap;
@@ -82,7 +84,7 @@ public class Portal {
         int id = game.monsters.length - 1;
         switch (type) {
             case BULLETS:
-                game.monsters[id] = new BulletPrize(game, id);
+                game.monsters[id] = new BulletBonus(game, id);
                 break;
             case MONSTR1:
                 game.monsters[id] = new Monstr1(game, id);
@@ -93,9 +95,18 @@ public class Portal {
             case MONSTR3:
                 game.monsters[id] = new Monstr3(game, id);
                 break;
+            case MONSTR4:
+                game.monsters[id] = new Monstr4(game, id);
+                break;
+            default:
+                game.monsters[id] = new Monstr1(game, id);
+                break;
 
         }
+
+        Log.i("Portal", "id=" + id + " monsters.length=" + game.monsters.length + " type=" + type);
         game.monsters[id].setGameY(game.getGameScreenHeight() / 2);
+
 
         if (leftSide) {
             //Left portal

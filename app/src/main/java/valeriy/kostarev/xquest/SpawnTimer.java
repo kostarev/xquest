@@ -30,12 +30,11 @@ public class SpawnTimer extends Thread {
             while (!game.isRunning()) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(100);
-                    lastSpawnTime = lastSpawnTime + 100;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            if (lastSpawnTime + sleepTime < System.currentTimeMillis()) {
+            if (lastSpawnTime + sleepTime < game.time()) {
 
                 Random r = new Random();
                 //Случайный портал (левый или правый)
@@ -63,7 +62,8 @@ public class SpawnTimer extends Thread {
                 if (x < 15) {
                     game.portal.spawn(Portal.BULLETS, leftSide);
                 } else {
-                    x = r.nextInt(3);
+                    x = r.nextInt(4);
+                    //x = 3;
                     switch (x) {
                         case 0:
                             game.portal.spawn(Portal.MONSTR1, leftSide);
@@ -74,9 +74,12 @@ public class SpawnTimer extends Thread {
                         case 2:
                             game.portal.spawn(Portal.MONSTR3, leftSide);
                             break;
+                        case 3:
+                            game.portal.spawn(Portal.MONSTR4, leftSide);
+                            break;
                     }
                 }
-                lastSpawnTime = System.currentTimeMillis();
+                lastSpawnTime = game.time();
             }
 
             try {

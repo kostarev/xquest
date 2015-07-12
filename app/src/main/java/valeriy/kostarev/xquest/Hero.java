@@ -241,10 +241,10 @@ public class Hero {
     //Выстрел
     public void shot() {
         //Ограничиваем количество выстрелов во времени
-        if(lastShotTime+shotSleepTime>System.currentTimeMillis()){
+        if (lastShotTime + shotSleepTime > game.time()) {
             return;
         }
-        lastShotTime = System.currentTimeMillis();
+        lastShotTime = game.time();
 
         float x = gameX + shipWidth / 2;
         float y = gameY + shipHeight / 2;
@@ -297,7 +297,7 @@ public class Hero {
     public void setBulletType(int bulletType) {
         this.bulletType = bulletType;
 
-        //Задержка между выстрелами в ms
+        //Задержка между выстрелами
         switch(bulletType){
             case BULLET_NORMAL:
                 shotSleepTime = 200;
@@ -309,7 +309,7 @@ public class Hero {
                 shotSleepTime = 200;
                 break;
             case BULLET_BACK:
-                shotSleepTime = 30;
+                shotSleepTime = 300;
                 break;
         }
     }

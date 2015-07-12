@@ -32,9 +32,9 @@ public class Unit {
         health = 1;
         cost = 100;
         //Меняет направление движения через
-        sleepTime = 1000;
+        sleepTime = 3000;
 
-        lastTime = System.currentTimeMillis();
+        lastTime = game.time();
 
     }
 

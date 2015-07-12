@@ -57,14 +57,14 @@ public class Mine{
         //Здоровье астеройда
         health = 3;
 
-        rotationWaitTime = 10;
+        rotationWaitTime = 1;
         rotateAngleInc = -1;
     }
 
     public void draw(Canvas canvas) {
 
-        if(lastRotationTime+rotationWaitTime<System.currentTimeMillis()) {
-            lastRotationTime = System.currentTimeMillis();
+        if (lastRotationTime + rotationWaitTime < game.time()) {
+            lastRotationTime = game.time();
             rotateAngle++;
         }
 

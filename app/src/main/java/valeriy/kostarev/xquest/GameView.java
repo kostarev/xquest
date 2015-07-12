@@ -8,10 +8,9 @@ import android.view.SurfaceView;
 
 public class GameView extends SurfaceView {
 
-    public SurfaceHolder holder;
     public final Game game;
     public final GameActivity activity;
-
+    public SurfaceHolder holder;
     public GameManager gameLoopThread;
 
 
@@ -74,7 +73,7 @@ public class GameView extends SurfaceView {
         try {
             game.draw(canvas);
         } catch (Exception e) {
-           // Log.i("Ошибка отрисовки ", e.toString());
+            Log.i("Ошибка отрисовки ", e.toString());
         }
     }
 }
