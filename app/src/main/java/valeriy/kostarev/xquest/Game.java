@@ -12,13 +12,14 @@ import android.view.Display;
 import android.view.MotionEvent;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by valerik on 23.11.2014.
  */
 public class Game {
 
-    //Константы направления
+    //Константы
     public static final byte CRYSTAL = 1;
     public static final byte MINE = 2;
     public static final byte FREEAREA = 3;
@@ -84,6 +85,8 @@ public class Game {
     private Thread spawnThread;
     private long gameTime;
 
+    private TextAnimation textAnimation;
+
 
     private Game(GameView gameView) {
         this.gameView = gameView;
@@ -147,7 +150,7 @@ public class Game {
         shipflare = Bitmap.createScaledBitmap(tmpShipflare, kvant * 4, kvant * 4 * hw, true);
 
 
-        //Ширина кристала
+        //Ширина кристала/мины/элемента игры
         elementWidth = 3 * kvant;
 
         //Звёздное небо
@@ -201,6 +204,7 @@ public class Game {
 
         //Порталы (сразу обе стороны)
         portal = new Portal(this);
+        //Таймер спауна врагов и бонусов
         spawnTimer = SpawnTimer.getInstance(this);
 
         //Монстры
@@ -234,7 +238,7 @@ public class Game {
         //Скрываем пункт Продолжить
         mainMenu.setHiden(MENU_RESUME, true);
 
-
+        //Джойстик и кнопки управления
         joystick = new Joystick(this);
         fireButton = new ButtonFire(this);
 
@@ -248,6 +252,7 @@ public class Game {
         buttonBack.setXY(2 * kvant, 2 * kvant);
         buttonBack.setText(gameView.activity.getBaseContext().getString(R.string.Menu));
 
+        //время действия бонусных пуль
         bulletTimer = new BulletTimer(this);
         bulletThread = new Thread(bulletTimer);
 
@@ -256,6 +261,8 @@ public class Game {
         sound.load("shot", R.raw.shot);
         sound.load("explode", R.raw.explode);
         sound.load("crystall", R.raw.crystall);
+
+        textAnimation = new TextAnimation(this);
 
         //Запуск новой игры
         newGame();
@@ -268,6 +275,15 @@ public class Game {
         return instance;
     }
 
+    /**
+     * @param owner  владелец пули (что бы не сбить себя своей пулей)
+     * @param x      координата на игровом поле
+     * @param y      координата на игровом поле
+     * @param speedX скорость по оси Х
+     * @param speedY скорость по оси Y
+     * @param color  цвет пули
+     * @param radius радиус (размер) пули
+     */
     //Создание пули
     public void newBullet(int owner, float x, float y, float speedX, float speedY, int color, int radius) {
         //Создание пули на экране
@@ -303,7 +319,7 @@ public class Game {
         //Инициализация волны
         initWave();
 
-        //Поток рожающий монстров
+        //Поток для спауна монстров и бонусов
         spawnThread = new Thread(spawnTimer);
         try {
             spawnThread.start();
@@ -312,6 +328,11 @@ public class Game {
         }
     }
 
+    /**
+     * @param x    координата на игровом поле
+     * @param y    координата на игровом поле
+     * @param size размер взрыва (0,1)
+     */
     //Создание взрыва
     public void newExplode(float x, float y, int size) {
         for (int i = 0; i < explosionsMax; i++) {
@@ -389,6 +410,15 @@ public class Game {
             mines[i] = new Mine(this, i);
         }
 
+        //Убираем свободные зоны, что бы минёры могли ставить там мины
+        for (int j = 0; j < setkaHeight; j++) {
+            for (int i = 0; i < setkaWidth; i++) {
+                if (setka[i][j] == FREEAREA) {
+                    setka[i][j] = 0;
+                }
+            }
+        }
+
         //Планеты
         int planetsMax = 4;
         planets = new Planet[planetsMax];
@@ -402,7 +432,7 @@ public class Game {
             pulsars[i] = new Pulsar(this, i);
         }
 
-        //Монстры
+        //Очищаем массив монстров
         monsters = new Unit[0];
 
         //Очищаем массив пуль
@@ -419,6 +449,13 @@ public class Game {
         hero.initXY();
         //Закрываем проход
         border.setOpened(false);
+
+        textAnimation.setText(WaveString + " " + wave);
+        textAnimation.setColor(Color.WHITE);
+        textAnimation.init(500, 1000, realScreenWidth / 2 - 5 * kvant, realScreenHeight / 2, realScreenWidth - panelWidth + 2 * kvant, 2 * kvant, 7 * kvant, 2 * kvant);
+
+        //Задержка перед началом игры
+        wait(1000);
     }
 
 
@@ -485,9 +522,9 @@ public class Game {
         hero.draw(canvas);
 
         //Взрывы
-        for (int i = 0; i < explosionsMax; i++) {
-            if (explosions[i] != null) {
-                explosions[i].draw(canvas);
+        for (Explosion explosion : explosions) {
+            if (explosion != null) {
+                explosion.draw(canvas);
             }
         }
 
@@ -495,10 +532,10 @@ public class Game {
         //Очки, жизни, инфа
         paint.setColor(Color.argb(100, 180, 180, 180));
         paint.setTextSize(2 * kvant);
-        canvas.drawText(WaveString + " " + wave, realScreenWidth - panelWidth + 2 * kvant, 2 * kvant, paint);
         canvas.drawText(CristalsString + " " + crystalsCnt, realScreenWidth - panelWidth + 2 * kvant, 6 * kvant, paint);
         canvas.drawText(PointsString + " " + points, realScreenWidth - panelWidth + 2 * kvant, 10 * kvant, paint);
         canvas.drawText(LivesString + " " + lives, realScreenWidth - panelWidth + 2 * kvant, 14 * kvant, paint);
+
 
         switch (action) {
             case ACTION_MAIN_MENU:
@@ -511,6 +548,8 @@ public class Game {
                     buttonPause.draw(canvas);
                     buttonBack.draw(canvas);
                 }
+                //Анимированная строка - номер волны
+                textAnimation.draw(canvas);
                 break;
         }
 
@@ -536,7 +575,7 @@ public class Game {
         return gameTime;
     }
 
-    private int FPS() {
+    public int FPS() {
         fpsCnt++;
         if (fpsStartTime + 1000 < System.currentTimeMillis()) {
             fpsStartTime = System.currentTimeMillis();
